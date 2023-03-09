@@ -1,52 +1,28 @@
-import 'package:firbase_learn/Screens/postScreen.dart';
+import 'package:firbase_learn/utils/utilitites.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
-import './signupScreen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../utils/utilitites.dart';
 
-class loginScreen extends StatefulWidget {
-  const loginScreen({super.key});
+class signinScreen extends StatefulWidget {
+  static const routeName = '/sign-up-screen';
+  const signinScreen({super.key});
 
   @override
-  State<loginScreen> createState() => _loginScreenState();
+  State<signinScreen> createState() => _signinScreenState();
 }
 
-class _loginScreenState extends State<loginScreen> {
+class _signinScreenState extends State<signinScreen> {
   bool loading = false;
   final _formKey = GlobalKey<FormState>();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
-  final _auth = FirebaseAuth.instance;
-
+  FirebaseAuth _auth = FirebaseAuth.instance;
   @override
   void dispose() {
     emailController.dispose();
     passwordController.dispose();
     super.dispose();
-  }
-
-  void login() {
-    setState(() {
-      loading = true;
-    });
-    _auth
-        .signInWithEmailAndPassword(
-            email: emailController.text, password: passwordController.text)
-        .then((value) {
-      utilities().showMsg(value.user!.email.toString());
-      Navigator.of(context).pushNamed(PostScreen.routeName);
-      setState(() {
-        loading = false;
-      });
-    }).onError((error, stackTrace) {
-      utilities().showMsg(error.toString());
-
-      setState(() {
-        loading = false;
-      });
-    });
   }
 
   @override
@@ -72,7 +48,7 @@ class _loginScreenState extends State<loginScreen> {
                     height: 20,
                   ),
                   const Text(
-                    'Welcome Back, Youve Been Missed!',
+                    'Welcome, Create a new account!',
                     style: TextStyle(fontSize: 20),
                   ),
                   const SizedBox(
@@ -94,7 +70,7 @@ class _loginScreenState extends State<loginScreen> {
                                       BorderSide(color: Colors.grey.shade400)),
                               fillColor: Colors.grey.shade600,
                               filled: true,
-                              labelStyle: TextStyle(color: Colors.black),
+                              labelStyle: const TextStyle(color: Colors.black),
                             ),
                             validator: (value) {
                               if (value!.isEmpty) {
@@ -146,7 +122,23 @@ class _loginScreenState extends State<loginScreen> {
                   GestureDetector(
                     onTap: () {
                       if (_formKey.currentState!.validate()) {
-                        login();
+                        setState(() {
+                          loading = true;
+                        });
+                        _auth
+                            .createUserWithEmailAndPassword(
+                                email: emailController.text.toString(),
+                                password: passwordController.text.toString())
+                            .then((value) {
+                          setState(() {
+                            loading = false;
+                          });
+                        }).onError((error, stackTrace) {
+                          utilities().showMsg(error.toString());
+                          setState(() {
+                            loading = false;
+                          });
+                        });
                       }
                     },
                     child: Container(
@@ -156,19 +148,18 @@ class _loginScreenState extends State<loginScreen> {
                         borderRadius: BorderRadius.circular(15),
                         color: Colors.red,
                       ),
-                      child: loading
-                          ? const Center(
-                              child: CircularProgressIndicator(
-                                strokeWidth: 4,
-                                color: Colors.white,
-                              ),
-                            )
-                          : const Center(
-                              child: Text(
-                              'Sign In',
-                              style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.bold),
-                            )),
+                      child: Center(
+                          child: loading
+                              ? const CircularProgressIndicator(
+                                  strokeWidth: 3,
+                                  color: Colors.white,
+                                )
+                              : const Text(
+                                  'Sign Up',
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold),
+                                )),
                     ),
                   ),
                   const SizedBox(
@@ -230,14 +221,11 @@ class _loginScreenState extends State<loginScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text('not a member? '),
+                      const Text('Already have an Account? '),
                       GestureDetector(
-                        onTap: () {
-                          Navigator.of(context)
-                              .pushNamed(signinScreen.routeName);
-                        },
+                        onTap: () {},
                         child: const Text(
-                          'Register now',
+                          'Login',
                           style: TextStyle(
                               color: Colors.blue, fontWeight: FontWeight.bold),
                         ),

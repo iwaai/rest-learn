@@ -1,6 +1,8 @@
 import '../Screens/splaceScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import './Screens/signupScreen.dart';
+import './Screens/postScreen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,6 +18,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -30,6 +33,10 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.deepPurple,
       ),
       home: const splashScreen(),
+      routes: {
+        signinScreen.routeName: (context) => const signinScreen(),
+        PostScreen.routeName: (context) => const PostScreen()
+      },
     );
   }
 }
